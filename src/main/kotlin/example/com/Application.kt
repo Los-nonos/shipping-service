@@ -1,38 +1,55 @@
 package example.com
 
-import example.com.app.config.mongoModule
+import com.fasterxml.jackson.databind.SerializationFeature
 import example.com.app.infrastructure.http.routes.shippingRoutes
-import example.com.plugins.*
-import io.github.cdimascio.dotenv.dotenv
-
+import example.com.app.infrastructure.persistance.config.configureDatabases
+import io.ktor.http.*
+import io.ktor.serialization.jackson.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.routing.*
-import org.koin.ktor.plugin.Koin
-import org.koin.logger.slf4jLogger
-
-// Dotenv configuration
-val apiPort = dotenv()["API_PORT"]?.toInt()?: 8080
-val apiHost = dotenv()["API_HOST"]?: "localhost"
-
+import io.ktor.server.plugins.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import org.slf4j.LoggerFactory
 
 fun main(args: Array<String>) {
-    println ("ShippingService is about to start...");
-    embeddedServer(Netty, apiPort, apiHost) { // Server configuration
-        module() // Application module configuration
-        install(Koin) { // Koin configuration
-            slf4jLogger() // Logger for Koin
-            modules(mongoModule) // Mongo module injector
-        }
+    io.ktor.server.netty.EngineMain.main(args)
+}
 
-        routing {
-            shippingRoutes()  // Shipping routes register
+fun Application.errorHandler() {
+    install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            logError(call, cause)
+
+            if (cause is NotFoundException) {
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to cause.message))
+            } else {
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Internal server error"))
+            }
+
         }
-    }.start(wait = true) // Start the server
-    println ("Server is ready and listening on port ${apiHost}:${apiPort}...");
+    }
 }
 
 fun Application.module() {
-    configureSerialization()  // Configure serialization
+    install(ContentNegotiation) {
+        json()
+        jackson {
+            enable(SerializationFeature.INDENT_OUTPUT)
+        }
+    }
+
+    configureDatabases()
+    shippingRoutes()
+    errorHandler()
+}
+
+
+
+fun logError(call: ApplicationCall, cause: Throwable) {
+    val log = LoggerFactory.getLogger("ErrorLogger")
+    val requestUri = call.request.uri
+    log.error("Error at $requestUri: ${cause.localizedMessage}", cause)
 }
