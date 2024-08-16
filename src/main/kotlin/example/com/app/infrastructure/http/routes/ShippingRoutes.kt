@@ -21,10 +21,16 @@ fun Application.shippingRoutes() {
 //    val findUserByIdAction = FindUserByIdAction(FindUserByIdHandler(userMongoUserRepository))
 
     routing {
+        // Ruta (route) ----> ejecuta una accion en base a un path al que se requiere
+        //      Acción (action) ----> valida el body recibido y se lo pasa al handler
+        //                  Manejador/Orquestador (Handler) ----> ejecuta la lógica de negocio
+        //                                  Repositorio (Repository) ----> se comunica con la base de datos
+        //                                                  Entidad (Entity) ----> mapea los datos previos a la consulta a la base de datos                             Base de datos (MongoDB)
 
+        // POST /shippings crea un nuevo envío
         post("/shippings") {
             val body = call.receive<ConfirmShippingCommand>()
-            confirmShippingAction.execute(body);
+            confirmShippingAction.execute(body)
 
             call.respond(HttpStatusCode.Created, mapOf("message" to "ok"))
         }
