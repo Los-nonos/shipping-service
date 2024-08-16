@@ -2,7 +2,7 @@ package example.com
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import example.com.app.infrastructure.http.routes.shippingRoutes
-import example.com.app.infrastructure.persistance.config.configureDatabases
+import example.com.app.infrastructure.persistance.config.connectToMongoDB
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.serialization.kotlinx.json.*
@@ -40,10 +40,13 @@ fun Application.module() {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
-
-    configureDatabases()
-    shippingRoutes()
-    errorHandler()
+    try{
+        connectToMongoDB()
+        shippingRoutes()
+        errorHandler()
+    } catch (e: Exception) {
+        println("Error configuring application: ${e.message}")
+    }
 }
 
 

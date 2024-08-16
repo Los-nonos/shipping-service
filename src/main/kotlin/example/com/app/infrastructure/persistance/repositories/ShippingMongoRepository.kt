@@ -4,8 +4,10 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.UpdateOptions
 import example.com.app.domain.entity.Shipping
+import io.github.cdimascio.dotenv.dotenv
 import org.bson.Document
 
+val collectionName: String = dotenv()["SHIPPING_COLLECTION_NAME"] ?: "shipping"
 class ShippingMongoRepository(private val database: MongoDatabase) {
 
     private var collection: MongoCollection<Any>;
@@ -15,6 +17,7 @@ class ShippingMongoRepository(private val database: MongoDatabase) {
     }
 
     fun save(shipping: Shipping) {
+        println("ShippingMongoRepository - Saving shipping: $shipping")
         val options = UpdateOptions().upsert(true);
 
         val filter = Document("_id", shipping.getId()) // Usa el campo id como filter
