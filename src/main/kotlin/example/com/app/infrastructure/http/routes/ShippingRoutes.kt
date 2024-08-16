@@ -22,7 +22,7 @@ fun Application.shippingRoutes() {
 
     routing {
 
-        post("/users") {
+        post("/shippings") {
             val body = call.receive<ConfirmShippingCommand>()
             confirmShippingAction.execute(body);
 
