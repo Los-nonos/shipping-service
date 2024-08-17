@@ -28,7 +28,6 @@ fun Application.errorHandler() {
             } else {
                 call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Internal server error"))
             }
-
         }
     }
 }
