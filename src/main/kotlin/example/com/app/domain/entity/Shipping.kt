@@ -1,39 +1,109 @@
 package example.com.app.domain.entity
 
-class Shipping(
-    private val id: String,
-    private val buyerName: String,
-    private val buyerLastName: String,
-    private val buyerAddress: String,
-    private val buyerCity: String,
-    private val buyerCountry: String,
-    private val buyerZipCode: Int,
-    private val buyerEmail: String,
-    private val shippingProductId: String,
-    private val sellerCompleteName: String,
-)
-{
+import example.com.app.domain.events.DomainEvent
+import example.com.app.domain.events.ShippingCreated
+import example.com.app.domain.valueObjects.*
+import java.util.UUID
+
+data class Shipping(
+    val id: String,
+    val clientId: String,
+    var origin: Origin?,
+    val destination: Destination,
+    val returnDestination: Destination?,
+    val receiver: Receiver,
+    var sender: Receiver?,
+    val piece: Piece,
+    val bu: String,
+    var shippingMethod: ShippingMethod?
+) {
+
+    private var events: List<DomainEvent> = mutableListOf();
+    private var status: Status? = null
 
     companion object {
-        fun fromPrimitives(primitives: Map<String, String>): Shipping {
+        fun fromPrimitives(primitives: Map<String, Any>): Shipping {
 
             val shipping = Shipping(
                 primitives["id"] as String,
-                primitives["buyerName"] as String,
-                primitives["buyerLastName"] as String,
-                primitives["buyerAddress"] as String,
-                primitives["buyerCity"] as String,
-                primitives["buyerCountry"] as String,
-                primitives["buyerZipCode"] as Int,
-                primitives["buyerEmail"] as String,
-                primitives["shippingProductId"] as String,
-                primitives["sellerCompleteName"] as String,
+                primitives["clientId"] as String,
+                Origin.fromPrimitives(primitives["origin"] as Map<String, Any>),
+                Destination.fromPrimitives(primitives["destination"] as Map<String, Any>),
+                Destination.fromPrimitives(primitives["returnDestination"] as Map<String, Any>),
+                Receiver.fromPrimitives(primitives["receiver"] as Map<String, Any>),
+                primitives["sender"]?.let { Receiver.fromPrimitives(primitives["sender"] as Map<String, Any>) },
+                Piece.fromPrimitives(primitives["piece"] as Map<String, String>),
+                primitives["bu"] as String,
+                ShippingMethod.fromPrimitives(primitives["shippingMethod"] as Map<String, String>?)
             );
+
+            shipping.status = Status.fromPrimitives(primitives["status"] as Map<String, String>?)
 
             return shipping;
         }
+
+        fun create(
+            clientId: String,
+            origin: Origin?,
+            destination: Destination,
+            returnDestination: Destination?,
+            receiver: Receiver,
+            sender: Receiver?,
+            piece: Piece,
+            bu: String,
+            shippingMethod: ShippingMethod?
+        ): Shipping {
+
+            val shipping = Shipping(
+                UUID.randomUUID().toString(),
+                clientId,
+                origin,
+                destination,
+                returnDestination,
+                receiver,
+                sender,
+                piece,
+                bu,
+                shippingMethod
+            )
+
+            shipping.recordEvent(
+                ShippingCreated(
+                    shipping.id,
+                    clientId,
+                    origin,
+                    destination,
+                    returnDestination,
+                    receiver,
+                    sender,
+                    piece,
+                    bu,
+                    shippingMethod
+                )
+            )
+
+            return shipping
+        }
     }
 
+    private fun recordEvent(event: DomainEvent) {
+        this.events = this.events.plus(event)
+    }
+
+
+    fun toPrimitives(): Map<String, Any?> {
+        return mapOf(
+            "id" to this.id,
+            "clientId" to this.clientId,
+            "origin" to this.origin?.toPrimitives(),
+            "destination" to this.destination.toPrimitives(),
+            "receiver" to this.receiver.toPrimitives(),
+            "sender" to this.sender?.toPrimitives(),
+            "piece" to this.piece.toPrimitives(),
+            "bu" to this.bu,
+            "shippingMethod" to this.shippingMethod?.toPrimitives()
+        )
+    }
 
     fun getId(): String {
         return this.id;
@@ -49,18 +119,4 @@ class Shipping(
 //        this.buyerLastName = lastName;
 //    }
 
-    fun toPrimitives(): Map<String, String> {
-        return mapOf(
-            "id" to this.id,
-            "buyerName" to this.buyerName,
-            "buyerLastName" to this.buyerLastName,
-            "buyerAddress" to this.buyerAddress,
-            "buyerCity" to this.buyerCity,
-            "buyerCountry" to this.buyerCountry,
-            "buyerZipCode" to this.buyerZipCode.toString(),
-            "buyerEmail" to this.buyerEmail,
-            "shippingProductId" to this.shippingProductId,
-            "sellerCompleteName" to this.sellerCompleteName
-        )
-    }
 }
