@@ -5,6 +5,7 @@ import example.com.app.application.commands.ConfirmShippingCommand
 import example.com.app.infrastructure.http.actions.ConfirmShippingAction
 import example.com.app.infrastructure.persistance.config.connectToMongoDB
 import example.com.app.infrastructure.persistance.repositories.ShippingMongoRepository
+import example.com.eventBus
 import example.com.app.infrastructure.utils.Response
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -17,7 +18,7 @@ fun Application.shippingRoutes() {
     val shippingMongoRepository = ShippingMongoRepository(mongoDatabase) // Inyección del repositorio
 
     val confirmShippingAction =
-        ConfirmShippingAction(ConfirmShippingHandler(shippingMongoRepository)) // Inyección del manejador de la acción
+        ConfirmShippingAction(ConfirmShippingHandler(shippingMongoRepository, eventBus)) // Inyección del manejador de la acción
 
 //    val findUserByIdAction = FindUserByIdAction(FindUserByIdHandler(userMongoUserRepository))
 
@@ -31,20 +32,12 @@ fun Application.shippingRoutes() {
         // POST /shippings crea un nuevo envío
         post("/shippings") {
             println("Received POST request to /shippings")
-//            val body = call.receive<ConfirmShippingCommand>()
-//            confirmShippingAction.execute(body)
-//            val body = call.receive<ConfirmShippingCommand>()
-//
-//            val validationErrors = body.validate()
-//            if (body.validate().isNotEmpty()) {
-//                confirmShippingAction.execute(body)
-//            } else {
-//                call.respond(HttpStatusCode.BadRequest, mapOf("errors" to validationErrors))
-//            }
-            val response = Response("Hello world", HttpStatusCode.OK, true, null, null)
 
-//            call.respond(HttpStatusCode.Created, response.success(null))
-            call.respond(HttpStatusCode.Created, response.success("checking"))
+            val body = call.receive<ConfirmShippingCommand>()
+
+            confirmShippingAction.execute(body)
+
+            call.respond(HttpStatusCode.Created, mapOf("message" to "ok"))
         }
     }
 }
