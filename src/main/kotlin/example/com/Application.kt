@@ -1,8 +1,10 @@
 package example.com
 
 import com.fasterxml.jackson.databind.SerializationFeature
+
 import example.com.app.application.subscribers.subscribers
 import example.com.app.infrastructure.eventBus.InMemoryEventBus
+import example.com.app.infrastructure.http.routes.healthRoutes
 import example.com.app.infrastructure.http.routes.shippingRoutes
 import example.com.app.infrastructure.persistance.config.connectToMongoDB
 import io.ktor.http.*
@@ -45,6 +47,7 @@ fun Application.module() {
     }
     try{
         connectToMongoDB()
+        healthRoutes()
         shippingRoutes()
         subscribers()
         errorHandler()
