@@ -129,6 +129,10 @@ data class Shipping(
         return this.id;
     }
 
+    fun pullDomainEvents(): List<DomainEvent> {
+        return this.events;
+    }
+
 //    fun update(buyerName: String, buyerLastName: String) {
 //        this.buyerName = name;
 //        this.buyerLastName = lastName;
