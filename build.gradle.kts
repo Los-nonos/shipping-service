@@ -2,6 +2,7 @@
 val kotlin_version: String by project
 val logback_version: String by project
 val mongo_version: String by project
+val koin_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -27,9 +28,12 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.github.cdimascio:java-dotenv:5.2.2")
     implementation("org.mongodb:mongodb-driver-core:$mongo_version")
     implementation("org.mongodb:mongodb-driver-sync:$mongo_version")
     implementation("org.mongodb:bson:$mongo_version")
+    implementation("io.ktor:ktor-server-host-common:2.0.0")
+    implementation("io.ktor:ktor-server-status-pages:2.0.0")
     implementation("io.ktor:ktor-serialization-jackson-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
