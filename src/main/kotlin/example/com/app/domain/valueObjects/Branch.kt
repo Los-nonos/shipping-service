@@ -1,5 +1,8 @@
 package example.com.app.domain.valueObjects
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Branch(val code: String) {
     fun validate() {
         checkNotNull(code) { "Branch must be defined" }

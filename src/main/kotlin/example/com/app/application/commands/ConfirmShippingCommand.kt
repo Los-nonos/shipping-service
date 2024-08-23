@@ -1,26 +1,34 @@
 package example.com.app.application.commands
 
+import example.com.app.domain.valueObjects.*
+import kotlinx.serialization.Serializable
+
+@Serializable
 class ConfirmShippingCommand(
-    val buyerName: String,
-    val buyerLastName: String,
-    val buyerAddress: String,
-    val buyerCity: String,
-    val buyerCountry: String,
-    val buyerZipCode: Int,
-    val buyerEmail: String,
-    val shippingProductId: String,
-    val sellerCompleteName: String,
+    val clientId: String,
+    val origin: Origin? = null,
+    val destination: Destination,
+    val returnDestination: Destination? = null,
+    val receiver: Receiver,
+    val sender: Receiver? = null,
+    val piece: Piece,
+    val bu: String,
+    val shippingMethod: ShippingMethod? = null,
 ) {
+
     fun validate(): ConfirmShippingCommand {
-        checkNotNull(buyerName) { throw IllegalArgumentException("BuyerName must be defined") }
-        checkNotNull(buyerLastName) { throw IllegalArgumentException("BuyerLastName must be defined") }
-        checkNotNull(buyerAddress) { throw IllegalArgumentException("BuyerAddress must be defined") }
-        checkNotNull(buyerCity) { throw IllegalArgumentException("BuyerCity must be defined") }
-        checkNotNull(buyerCountry) { throw IllegalArgumentException("BuyerCountry must be defined") }
-        checkNotNull(buyerZipCode) { throw IllegalArgumentException("BuyerZipCode must be defined") }
-        checkNotNull(buyerEmail) { throw IllegalArgumentException("BuyerEmail must be defined") }
-        checkNotNull(shippingProductId) { throw IllegalArgumentException("ShippingProductId must be defined") }
-        checkNotNull(sellerCompleteName) { throw IllegalArgumentException("SellerCompleteName must be defined") }
+        checkNotNull(clientId) { throw IllegalArgumentException("ClientId must be defined") }
+        origin?.validate()
+        checkNotNull(destination) { throw IllegalArgumentException("Destination must be defined") }
+        destination.validate()
+        returnDestination?.validate()
+        checkNotNull(receiver) { throw IllegalArgumentException("Receiver must be defined") }
+        receiver.validate()
+        sender?.validate()
+        checkNotNull(piece) { throw IllegalArgumentException("Piece must be defined") }
+        piece.validate()
+        checkNotNull(bu) { throw IllegalArgumentException("Business unit must be defined") }
+        shippingMethod?.validate()
 
         return this;
     }

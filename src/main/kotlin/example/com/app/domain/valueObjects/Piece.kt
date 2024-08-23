@@ -1,6 +1,13 @@
 package example.com.app.domain.valueObjects
 
-data class Piece(val product_code: String, val reference_number: String?) {
+import kotlinx.serialization.Serializable
+import org.jetbrains.annotations.Nullable
+
+@Serializable
+data class Piece(
+    val product_code: String,
+    val reference_number: String? = null
+) {
     fun validate() {
         checkNotNull(product_code) { "piece product_code must be defined" }
     }

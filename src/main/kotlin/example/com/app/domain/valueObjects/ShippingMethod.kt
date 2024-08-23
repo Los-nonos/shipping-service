@@ -1,5 +1,8 @@
 package example.com.app.domain.valueObjects
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ShippingMethod(
     val type: String,
     val courier_code: String,

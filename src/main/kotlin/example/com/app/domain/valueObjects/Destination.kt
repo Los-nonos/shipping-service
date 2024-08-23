@@ -1,8 +1,11 @@
 package example.com.app.domain.valueObjects
 
-data class Destination(val type: String, val address: Address?, val branch: Branch?) {
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class Destination(val type: String, val address: Address?) {
     fun validate() {
-        if (address == null && branch == null) {
+        if (address == null) {
             throw IllegalStateException("address or branch must be defined in destination")
         }
         address?.validate()
@@ -11,7 +14,6 @@ data class Destination(val type: String, val address: Address?, val branch: Bran
     fun toPrimitives(): Map<String, Any?> {
         return mapOf(
             "type" to this.type,
-            "branch" to this.branch?.toPrimitives(),
             "address" to this.address?.toPrimitives(),
         )
     }
@@ -22,7 +24,6 @@ data class Destination(val type: String, val address: Address?, val branch: Bran
             return Destination(
                 primitives["type"] as String,
                 Address.fromPrimitives(primitives["address"] as Map<String, String>?),
-                Branch.fromPrimitives(primitives["branch"] as Map<String, String>)
             )
         }
     }

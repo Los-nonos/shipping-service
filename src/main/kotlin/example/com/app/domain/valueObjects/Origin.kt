@@ -1,6 +1,9 @@
 package example.com.app.domain.valueObjects
 
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 data class Origin(val type: String?, val address: Address?, val branch: Branch?) {
     fun validate() {
         //TODO validate type

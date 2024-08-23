@@ -2,6 +2,8 @@ package example.com.app.domain.entity
 
 import example.com.app.domain.events.DomainEvent
 import example.com.app.domain.events.ShippingCreated
+import example.com.app.domain.events.ShippingHasNeedPrepared
+import example.com.app.domain.events.ShippingReadyToDeliver
 import example.com.app.domain.valueObjects.*
 import java.util.UUID
 
@@ -82,6 +84,24 @@ data class Shipping(
                 )
             )
 
+            shipping.status = Status("created", "pending")
+
+            if (origin != null && shippingMethod != null) {
+                shipping.status = Status("created", "in_preparation")
+
+                shipping.recordEvent(
+                    ShippingReadyToDeliver(
+                        shipping.id
+                    )
+                )
+            } else {
+                shipping.recordEvent(
+                    ShippingHasNeedPrepared(
+                        shipping.id
+                    )
+                )
+            }
+
             return shipping
         }
     }
@@ -105,7 +125,7 @@ data class Shipping(
         )
     }
 
-    fun getId(): String {
+    fun getShippingId(): String {
         return this.id;
     }
 

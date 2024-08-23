@@ -1,5 +1,8 @@
 package example.com.app.domain.valueObjects
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Phone(val type: String?, val number: String, val area_code: String?) {
     fun validate() {
         checkNotNull(number) { "Number was not specified" }

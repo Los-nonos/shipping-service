@@ -32,7 +32,9 @@ fun Application.shippingRoutes() {
         // POST /shippings crea un nuevo envío
         post("/shippings") {
             println("Received POST request to /shippings")
+
             val body = call.receive<ConfirmShippingCommand>()
+
             confirmShippingAction.execute(body)
 
             call.respond(HttpStatusCode.Created, mapOf("message" to "ok"))
