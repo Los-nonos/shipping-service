@@ -1,6 +1,8 @@
 package example.com
 
 import com.fasterxml.jackson.databind.SerializationFeature
+import example.com.app.application.subscribers.subscribers
+import example.com.app.infrastructure.eventBus.InMemoryEventBus
 import example.com.app.infrastructure.http.routes.shippingRoutes
 import example.com.app.infrastructure.persistance.config.connectToMongoDB
 import io.ktor.http.*
@@ -32,6 +34,8 @@ fun Application.errorHandler() {
     }
 }
 
+val eventBus = InMemoryEventBus()
+
 fun Application.module() {
     install(ContentNegotiation) {
         json()
@@ -42,6 +46,7 @@ fun Application.module() {
     try{
         connectToMongoDB()
         shippingRoutes()
+        subscribers()
         errorHandler()
     } catch (e: Exception) {
         println("Error configuring application: ${e.message}")

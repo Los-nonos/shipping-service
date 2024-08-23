@@ -9,7 +9,7 @@ import java.util.*
 
 class ConfirmShippingHandler(
     private val shippingRepository: ShippingRepository, // Implement this interface with your preferred data access layer (DAO) implementation.
-    // private val eventBus: EventBus
+    private val eventBus: EventBus
 ) {
     fun handle(command: ConfirmShippingCommand) {
 
@@ -26,7 +26,7 @@ class ConfirmShippingHandler(
         )
 
         shippingRepository.save(shipping)
-        // eventBus.publish(shipping.pullDomainEvents())
+        eventBus.publish(shipping.pullDomainEvents())
     }
 
 

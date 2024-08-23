@@ -5,6 +5,7 @@ import example.com.app.application.commands.ConfirmShippingCommand
 import example.com.app.infrastructure.http.actions.ConfirmShippingAction
 import example.com.app.infrastructure.persistance.config.connectToMongoDB
 import example.com.app.infrastructure.persistance.repositories.ShippingMongoRepository
+import example.com.eventBus
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -18,7 +19,7 @@ fun Application.shippingRoutes() {
     val shippingMongoRepository = ShippingMongoRepository(mongoDatabase) // Inyección del repositorio
 
     val confirmShippingAction =
-        ConfirmShippingAction(ConfirmShippingHandler(shippingMongoRepository)) // Inyección del manejador de la acción
+        ConfirmShippingAction(ConfirmShippingHandler(shippingMongoRepository, eventBus)) // Inyección del manejador de la acción
 
 //    val findUserByIdAction = FindUserByIdAction(FindUserByIdHandler(userMongoUserRepository))
 
